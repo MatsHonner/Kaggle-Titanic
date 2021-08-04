@@ -43,3 +43,28 @@ test_imp <- complete(test_imp, 1)
 
 
 
+##################################################################################################
+# Take out a limited sample
+set.seed(1234)
+train.index <- createDataPartition(train_imp$Survived, p=0.2, list=FALSE)
+train <- train_imp[ train.index,]
+
+
+##################################################################################################
+# model evaluation on limited sample
+ctrl <- trainControl(method = "repeatedcv", repeats = 5)
+
+model_gbm <- train(Survived ~ .,
+                   data = train, 
+                   method = "gbm", 
+                   trControl = ctrl
+)
+
+model_ranger <- train(Survived ~ .,
+                  data = train, 
+                  method = "ranger",
+                  ntree = 5,
+                  trControl = ctrl
+)
+
+
