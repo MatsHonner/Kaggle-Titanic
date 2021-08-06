@@ -51,20 +51,65 @@ train <- train_imp[ train.index,]
 
 
 ##################################################################################################
-# model evaluation on limited sample
-ctrl <- trainControl(method = "repeatedcv", repeats = 5)
+# Create limited sample models
+ctrl <- trainControl(method = "repeatedcv", number = 10, repeats = 5)
 
+set.seed(1234)
 model_gbm <- train(Survived ~ .,
                    data = train, 
                    method = "gbm", 
                    trControl = ctrl
 )
 
+set.seed(1234)
 model_ranger <- train(Survived ~ .,
-                  data = train, 
-                  method = "ranger",
-                  ntree = 5,
-                  trControl = ctrl
+                      data = train, 
+                      method = "ranger",
+                      ntree = 5,
+                      trControl = ctrl
 )
+
+set.seed(1234)
+model_SVM <- train(Survived ~ .,
+                   data = train, 
+                   method = "svmPoly",
+                   trControl = ctrl
+)
+
+set.seed(1234)
+model_NNET <- train(Survived ~ .,
+                    data = train, 
+                    method = "nnet",
+                    trControl = ctrl
+)
+
+set.seed(1234)
+model_GLM <- train(Survived ~ .,
+                    data = train, 
+                    method = "glm",
+                    trControl = ctrl
+)
+
+
+##################################################################################################
+# Evaluate the limited sample models
+results <- resamples(list(GBM=model_gbm, Ranger=model_ranger, SVM=model_SVM, NNET=model_NNET, GLM=model_GLM))
+summary(results)
+#bwplot(results)
+dotplot(results)
+
+
+
+##################################################################################################
+# GBM is chosen as best model
+set.seed(1234)
+model_gbm_full <- train(Survived ~ .,
+                   data = train_imp, 
+                   method = "gbm", 
+                   trControl = ctrl
+)
+
+result <- predict()
+
 
 
